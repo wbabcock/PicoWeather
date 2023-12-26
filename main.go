@@ -12,11 +12,10 @@ import (
 )
 
 const (
-	LED_PIN         = machine.GPIO15
-	DISPLAY_SDA_PIN = machine.GPIO6
-	DISPLAY_SCL_PIN = machine.GPIO7
-	BME280_SDA_PIN  = machine.GPIO0
-	BME280_SCL_PIN  = machine.GPIO1
+	LED_PIN = machine.LED
+
+	SDA_PIN = machine.GPIO0
+	SCL_PIN = machine.GPIO1
 )
 
 var (
@@ -42,14 +41,7 @@ func writeToDisplay(x int16, y int16, text string) {
 }
 
 func setupDisplay() {
-	// Display
-	machine.I2C1.Configure(machine.I2CConfig{
-		Frequency: machine.KHz * 400,
-		SDA:       DISPLAY_SDA_PIN,
-		SCL:       DISPLAY_SCL_PIN,
-	})
-
-	displayDev = ssd1306.NewI2C(machine.I2C1)
+	displayDev = ssd1306.NewI2C(machine.I2C0)
 	displayDev.Configure(ssd1306.Config{
 		Address: 0x3C,
 		Width:   128,
@@ -68,13 +60,6 @@ func setupDisplay() {
 }
 
 func setupSensor() {
-	// BME280
-	machine.I2C0.Configure(machine.I2CConfig{
-		Frequency: machine.KHz * 400,
-		SDA:       BME280_SDA_PIN,
-		SCL:       BME280_SCL_PIN,
-	})
-
 	sensor = bme280.New(machine.I2C0)
 	sensor.Configure()
 
@@ -83,13 +68,18 @@ func setupSensor() {
 		println("BME280 not detected")
 	}
 	println("BME280 detected")
-
 }
 
 func main() {
 	// Power Light
 	LED_PIN.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	LED_PIN.High()
+
+	machine.I2C0.Configure(machine.I2CConfig{
+		Frequency: machine.KHz * 400,
+		SDA:       SDA_PIN,
+		SCL:       SCL_PIN,
+	})
 
 	setupDisplay()
 	setupSensor()
