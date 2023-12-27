@@ -48,8 +48,6 @@ func setupDisplay() {
 		Height:  64,
 	})
 
-	// Reset Display
-	displayDev.ClearBuffer()
 	displayDev.ClearDisplay()
 
 	display = font.NewDisplay(displayDev)
